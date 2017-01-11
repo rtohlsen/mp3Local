@@ -27,7 +27,6 @@ public class ManagerMainScript : MonoBehaviour {
         showDebugMessage("Writing File");
         System.IO.File.WriteAllBytes(filePath, www.bytes);
 
-        showDebugMessage("Loading File from disk");
         StartCoroutine(LoadAudioFromDisk("file://" + filePath));
     }
 
@@ -44,17 +43,31 @@ public class ManagerMainScript : MonoBehaviour {
         //myClipFromDisk.GetData(f, 0);
         //Debug.Log("Load from disk over");
 
+        showDebugMessage("Loading www from disk");
         WWW www = new WWW(filePath);
         yield return www;
-        showDebugMessage("extracting audio from www object");
-        myClipFromDisk = www.audioClip;
-        playDiskAudio();
+
+        // next line temporary to make sure I can play a loaded file
+        StartCoroutine(waitThenPlayDownloadedClip());
+
+        //showDebugMessage("extracting audio from www object");
+        //myClipFromDisk = www.audioClip;
+        //playDiskAudio();
+    }
+
+    // This is temporary, plays the clip downloaded directly
+    IEnumerator waitThenPlayDownloadedClip() {
+        showDebugMessage("Aattaching clip to audio in 3 sec");
+        yield return new WaitForSeconds(3.0f);
+        myAudioSource.clip = myClip;
+        showDebugMessage("Playing audio");
+        myAudioSource.Play();
     }
 
     void playDiskAudio() {
-        showDebugMessage("attaching clip to audio");
+        showDebugMessage("Aattaching clip to audio");
         myAudioSource.clip = myClipFromDisk;
-        showDebugMessage("playing audio");
+        showDebugMessage("Playing audio");
         myAudioSource.Play();
         //myAudioSource.PlayOneShot(myClipFromDisk);
     }
