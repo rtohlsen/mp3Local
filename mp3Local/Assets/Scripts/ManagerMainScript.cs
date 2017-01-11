@@ -7,13 +7,11 @@ public class ManagerMainScript : MonoBehaviour {
     AudioClip myClip;
     AudioClip myClipFromDisk;
     AudioSource myAudioSource;
-    public AudioClip TestClip;
 
 	void Start () {
         myAudioSource = GetComponent<AudioSource>();
         //loadPreDownloadedFile();
         StartCoroutine(loadAudioFile());
-        //playTestClip();
     }
 
     IEnumerator loadAudioFile() {
@@ -54,13 +52,13 @@ public class ManagerMainScript : MonoBehaviour {
         //myAudioSource.PlayOneShot(myClipFromDisk);
         Debug.Log("Playing audio");
     }
-    void playTestClip() {
-        Debug.Log("attaching clip to audio");
-        myAudioSource.clip = TestClip;
-        myAudioSource.Play();
-        //myAudioSource.PlayOneShot(myClipFromDisk);
-        Debug.Log("Playing TestClip audio");
-    }
+    //void playTestClip() {
+    //    Debug.Log("attaching clip to audio");
+    //    myAudioSource.clip = TestClip;
+    //    myAudioSource.Play();
+    //    //myAudioSource.PlayOneShot(myClipFromDisk);
+    //    Debug.Log("Playing TestClip audio");
+    //}
 
 
     private float[] ConvertByteToFloat(byte[] array) {
