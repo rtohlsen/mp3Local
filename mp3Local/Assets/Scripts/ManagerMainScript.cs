@@ -8,6 +8,7 @@ public class ManagerMainScript : MonoBehaviour {
     AudioClip myClip;
     AudioClip myClipFromDisk;
     AudioSource myAudioSource;
+    WWW diskWWW;
     public GameObject myDebugTextObject;
 
 	void Start () {
@@ -22,8 +23,8 @@ public class ManagerMainScript : MonoBehaviour {
         yield return www;
         myClip = www.audioClip;
         showDebugMessage("Download over");
-        
-        string filePath = Application.persistentDataPath + "/testFile.mp3";
+
+        string filePath = Path.Combine(Application.persistentDataPath, "testFile.mp3");
         showDebugMessage("Writing File");
         System.IO.File.WriteAllBytes(filePath, www.bytes);
 
@@ -31,8 +32,8 @@ public class ManagerMainScript : MonoBehaviour {
     }
 
     void loadPreDownloadedFile() {
-        string filePath = Application.persistentDataPath + "/testFile.mp3";
-        StartCoroutine(LoadAudioFromDisk("file:" + filePath));
+        string filePath = Path.Combine(Application.persistentDataPath, "testFile.mp3");
+        StartCoroutine(LoadAudioFromDisk("file://" + filePath));
     }
 
     IEnumerator LoadAudioFromDisk(string filePath) {
@@ -44,13 +45,17 @@ public class ManagerMainScript : MonoBehaviour {
         //Debug.Log("Load from disk over");
 
         showDebugMessage("Loading www from disk");
-        WWW www = new WWW(filePath);
-        yield return www;
-
-        // next line temporary to make sure I can play a loaded file
-        StartCoroutine(waitThenPlayDownloadedClip());
+        diskWWW = new WWW(filePath);
+        //AudioClip tempAudioClip = www.audioClip;
+        //while (tempAudioClip.loadState == AudioDataLoadState.Loading)
+        yield return diskWWW;
 
         //showDebugMessage("extracting audio from www object");
+        StartCoroutine(waitThenPlayDiskClip());
+
+        // next line temporary to make sure I can play a loaded file
+        //StartCoroutine(waitThenPlayDownloadedClip());
+
         //myClipFromDisk = www.audioClip;
         //playDiskAudio();
     }
@@ -60,6 +65,16 @@ public class ManagerMainScript : MonoBehaviour {
         showDebugMessage("Aattaching clip to audio in 3 sec");
         yield return new WaitForSeconds(3.0f);
         myAudioSource.clip = myClip;
+        showDebugMessage("Playing audio");
+        myAudioSource.Play();
+    }
+
+    // This is temporary, plays the disk loaded clip after waiting 10 seconds
+    IEnumerator waitThenPlayDiskClip() {
+        AudioClip clip = diskWWW.GetAudioClip(false, false);
+        showDebugMessage("Aattaching clip to audio in 10 sec");
+        yield return new WaitForSeconds(10.0f);
+        myAudioSource.clip = clip;
         showDebugMessage("Playing audio");
         myAudioSource.Play();
     }
