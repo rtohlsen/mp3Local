@@ -8,13 +8,43 @@ public class ManagerMainScript : MonoBehaviour {
     AudioClip myClip;
     AudioClip myClipFromDisk;
     AudioSource myAudioSource;
+    WWW internetWWW;
     WWW diskWWW;
     public GameObject myDebugTextObject;
+    string pathString;
+    string randString;
 
 	void Start () {
         myAudioSource = GetComponent<AudioSource>();
+
+        // Generate random filename
+        float randNumber = UnityEngine.Random.Range(0, 100);
+        randString = randNumber.ToString();
+        pathString = string.Concat(Application.persistentDataPath, "/testfile_", randString , ".mp3");
+
         //loadPreDownloadedFile();
-        StartCoroutine(loadAudioFile());
+        //StartCoroutine(loadAudioFile());
+    }
+
+    public void fDownloadFromInternet() {
+        StartCoroutine(downloadFromInternet());
+    }
+    IEnumerator downloadFromInternet() {
+        showDebugMessage("Downloading...");
+        internetWWW = new WWW("http://conservativestream.com/recorded-shows/Savage_01-09-2017_WCB_FULL.mp3");
+        yield return internetWWW;
+        myClip = internetWWW.audioClip;
+        showDebugMessage("Download complete");
+    }
+
+    public void fSaveAudioClipToDisk() {
+        showDebugMessage("Writing File");
+        System.IO.File.WriteAllBytes(pathString, internetWWW.bytes);
+        showDebugMessage("Writing File Complete");
+    }
+
+    public void fLoadAudioClipFromDisk() {
+        StartCoroutine(LoadAudioFromDisk(string.Concat("file://" + pathString)));
     }
 
     IEnumerator loadAudioFile() {
@@ -32,8 +62,7 @@ public class ManagerMainScript : MonoBehaviour {
     }
 
     void loadPreDownloadedFile() {
-        string filePath = Path.Combine(Application.persistentDataPath, "testFile.mp3");
-        StartCoroutine(LoadAudioFromDisk("file://" + filePath));
+        
     }
 
     IEnumerator LoadAudioFromDisk(string filePath) {
@@ -49,9 +78,10 @@ public class ManagerMainScript : MonoBehaviour {
         //AudioClip tempAudioClip = www.audioClip;
         //while (tempAudioClip.loadState == AudioDataLoadState.Loading)
         yield return diskWWW;
+        showDebugMessage("www is loaded from disk");
 
         //showDebugMessage("extracting audio from www object");
-        StartCoroutine(waitThenPlayDiskClip());
+        //StartCoroutine(waitThenPlayDiskClip());
 
         // next line temporary to make sure I can play a loaded file
         //StartCoroutine(waitThenPlayDownloadedClip());
@@ -66,6 +96,22 @@ public class ManagerMainScript : MonoBehaviour {
         yield return new WaitForSeconds(3.0f);
         myAudioSource.clip = myClip;
         showDebugMessage("Playing audio");
+        myAudioSource.Play();
+    }
+
+    public void fAssignDiskClip() {
+        showDebugMessage("AssigningDiskClip");
+        myClipFromDisk = diskWWW.GetAudioClip(false, false);
+        showDebugMessage("AssignedDiskClip, but might not be finished");
+    }
+
+    public void fAttachDiskClipToGameObject() {
+        showDebugMessage("Aattaching clip to audio source");
+        myAudioSource.clip = myClipFromDisk;
+        showDebugMessage("Completed Attaching disk clip to audio source");
+    }
+
+    public void fPlayAudioSource() {
         myAudioSource.Play();
     }
 
