@@ -19,7 +19,7 @@ public class ManagerMainScript : MonoBehaviour {
 
         // Generate random filename
         float randNumber = UnityEngine.Random.Range(0, 100);
-        randString = randNumber.ToString();
+        randString = randNumber.ToString("0");
         pathString = string.Concat(Application.persistentDataPath, "/testfile_", randString , ".mp3");
 
         //loadPreDownloadedFile();
@@ -43,8 +43,18 @@ public class ManagerMainScript : MonoBehaviour {
         showDebugMessage("Writing File Complete");
     }
 
+    public void fShowFilePath() {
+        showDebugMessage(pathString);
+    }
+
     public void fLoadAudioClipFromDisk() {
         StartCoroutine(LoadAudioFromDisk(string.Concat("file://" + pathString)));
+    }
+    public void fLoadAudioClipFromDisk3Slash() {
+        StartCoroutine(LoadAudioFromDisk(string.Concat("file:///" + pathString)));
+    }
+    public void fLoadAudioClipFromDiskNoSlash() {
+        StartCoroutine(LoadAudioFromDisk(string.Concat("file:" + pathString)));
     }
 
     IEnumerator loadAudioFile() {
@@ -102,6 +112,11 @@ public class ManagerMainScript : MonoBehaviour {
     public void fAssignDiskClip() {
         showDebugMessage("AssigningDiskClip");
         myClipFromDisk = diskWWW.GetAudioClip(false, false);
+        showDebugMessage("AssignedDiskClip, but might not be finished");
+    }
+    public void fAssignDiskClipAlt() {
+        showDebugMessage("AssigningDiskClip");
+        myClipFromDisk = diskWWW.audioClip;
         showDebugMessage("AssignedDiskClip, but might not be finished");
     }
 
